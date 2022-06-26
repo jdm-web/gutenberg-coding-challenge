@@ -72,11 +72,12 @@ Since you need a WordPress environment to run the plugin, the quickest way to ge
 
 ## Installation
 
-Clone this repository to you local computer, `cd` to this directory and install the required version of Node and NPM dependencies:
+Clone this repository to you local computer, `cd` to this directory and install the required version of Node, NPM and PHP dependencies:
 
 ```sh
 nvm install
 npm install
+composer install
 ```
 
 Then, start the local environment
