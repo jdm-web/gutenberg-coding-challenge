@@ -1,20 +1,32 @@
-import countries from '../assets/countries.json';
-import './editor.scss';
+/**
+ * WordPress dependencies
+ */
 import { edit, globe } from '@wordpress/icons';
-import { BlockControls } from '@wordpress/block-editor';
-import { ComboboxControl, Placeholder, ToolbarButton, ToolbarGroup } from '@wordpress/components';
-import { getEmojiFlag } from './utils';
+import { BlockControls, useBlockProps } from '@wordpress/block-editor';
+import {
+	ComboboxControl,
+	Placeholder,
+	ToolbarButton,
+	ToolbarGroup,
+} from '@wordpress/components';
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import apiFetch from '@wordpress/api-fetch';
+
+/**
+ * Internal dependencies
+ */
+import './editor.scss';
+import countries from '../assets/countries.json';
+import { getEmojiFlag } from './utils';
 import Preview from './preview';
 
 export default function Edit( { attributes, setAttributes } ) {
 	const { countryCode, relatedPosts } = attributes;
-	const options = Object.keys(countries).map(code => ({
-        value: code,
-        label:  getEmojiFlag( code ) + '  ' + countries[code] + ' — ' + code
-	}));
-
+	const options = Object.keys( countries ).map( ( code ) => ( {
+		value: code,
+		label: getEmojiFlag( code ) + '  ' + countries[ code ] + ' — ' + code,
+	} ) );
 	const [ isPreview, setPreview ] = useState();
 
 	useEffect( () => setPreview( countryCode ), [ countryCode ] );
@@ -24,7 +36,7 @@ export default function Edit( { attributes, setAttributes } ) {
 		else if ( countryCode ) setPreview( true );
 	};
 
-	const handleChangeCountryCode = newCountryCode => {
+	const handleChangeCountryCode = ( newCountryCode ) => {
 		if ( newCountryCode && countryCode !== newCountryCode ) {
 			setAttributes( {
 				countryCode: newCountryCode,
@@ -35,47 +47,78 @@ export default function Edit( { attributes, setAttributes } ) {
 
 	useEffect( () => {
 		async function getRelatedPosts() {
-			const postId = window.location.href.match( /post=([\d]+)/ )[ 1 ];
-			const response = await window.fetch( `/wp-json/wp/v2/posts?search=${ countries[ countryCode ] }&exclude=${ postId }` );
+			//If there's no country code yet, no need to search for related posts
+			if ( ! countryCode ) {
+				return;
+			}
 
-			if ( ! response.ok )
-				throw new Error( `HTTP error! Status: ${ response.status }` );
+			//If the country code is unknown, throw an error
+			if ( ! countries[ countryCode ] ) {
+				throw new Error(
+					`[country-card] Unknown country code: ${ countryCode }`
+				);
+			}
 
-			const posts = await response.json();
+			const postId = wp.data.select( 'core/editor' ).getCurrentPostId();
+			const posts = await apiFetch( {
+				path: `/wp/v2/posts?search=${ countries[ countryCode ] }&exclude=${ postId }`,
+			} ).catch( ( error ) => {
+				throw new Error(
+					`[country-card] API fetch error (${ error.code }): ${ error.message }`
+				);
+			} );
 
 			setAttributes( {
-				relatedPosts: posts?.map( ( relatedPost ) => ( {
-					...relatedPost,
-					title: relatedPost.title?.rendered || relatedPost.link,
-					excerpt: relatedPost.excerpt?.rendered || '',
-				} ) ) || [],
+				relatedPosts:
+					posts?.map( ( relatedPost ) => ( {
+						...relatedPost,
+						title: relatedPost.title?.rendered || relatedPost.link,
+						excerpt: relatedPost.excerpt?.rendered || '',
+					} ) ) || [],
 			} );
 		}
 
 		getRelatedPosts();
-	}, [countryCode, setAttributes] );
+	}, [ countryCode, setAttributes ] );
 
 	return (
 		<>
 			<BlockControls>
 				<ToolbarGroup>
-						<ToolbarButton label={ __( 'Change Country', 'xwp-country-card' ) }
-							icon={ edit } onClick={ handleChangeCountry } disabled={ ! Boolean( countryCode ) } />
+					<ToolbarButton
+						label={ __( 'Change Country', 'xwp-country-card' ) }
+						icon={ edit }
+						onClick={ handleChangeCountry }
+						disabled={ ! Boolean( countryCode ) }
+					/>
 				</ToolbarGroup>
 			</BlockControls>
-			<div>
-				{ isPreview ? <Preview countryCode={ countryCode } relatedPosts={ relatedPosts }/> : <Placeholder icon={ globe } label={ __( 'XWP Country Card', 'xwp-country-card' ) }
-								 isColumnLayout={ true }
-								 instructions={ __( 'Type in a name of a contry you want to display on you site.', 'xwp-country-card' ) }>
+			<div { ...useBlockProps() }>
+				{ isPreview ? (
+					<Preview
+						countryCode={ countryCode }
+						relatedPosts={ relatedPosts }
+					/>
+				) : (
+					<Placeholder
+						icon={ globe }
+						label={ __( 'XWP Country Card', 'xwp-country-card' ) }
+						isColumnLayout={ true }
+						instructions={ __(
+							'Type in a name of a country you want to display on you site.',
+							'xwp-country-card'
+						) }
+					>
 						<ComboboxControl
 							label={ __( 'Country', 'xwp-country-card' ) }
-                            hideLabelFromVision
+							hideLabelFromVision
 							options={ options }
 							value={ countryCode }
 							onChange={ handleChangeCountryCode }
-                            allowReset={true}
+							allowReset={ true }
 						/>
-					</Placeholder> }
+					</Placeholder>
+				) }
 			</div>
 		</>
 	);
