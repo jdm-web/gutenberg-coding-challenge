@@ -61,7 +61,7 @@ export default function Edit( { attributes, setAttributes, context } ) {
 
 			const postId = context.postId;
 			const posts = await apiFetch( {
-				path: `/wp/v2/posts?search=${ countries[ countryCode ] }&exclude=${ postId }`,
+				path: `/wp/v2/posts?search=${ countries[ countryCode ] }&exclude=${ postId }&context=embed`,
 			} ).catch( ( error ) => {
 				throw new Error(
 					`[country-card] API fetch error (${ error.code }): ${ error.message }`
