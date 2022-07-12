@@ -29,7 +29,9 @@ export default function Edit( { attributes, setAttributes, context } ) {
 	} ) );
 	const [ isPreview, setPreview ] = useState();
 
-	useEffect( () => setPreview( countryCode ), [ countryCode ] );
+	useEffect( () => {
+		return setPreview( countryCode );
+	}, [ countryCode ] );
 
 	const handleChangeCountry = () => {
 		if ( isPreview ) setPreview( false );
