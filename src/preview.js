@@ -50,6 +50,12 @@ export default function Preview( { countryCode, relatedPosts } ) {
 		);
 	};
 
+	const escape = ( dangerousString ) => {
+		const div = document.createElement( 'div' );
+		div.innerHTML = dangerousString;
+		return div.innerText;
+	};
+
 	return (
 		<div className="xwp-country-card">
 			<div
@@ -75,11 +81,13 @@ export default function Preview( { countryCode, relatedPosts } ) {
 									data-post-id={ relatedPost.id }
 								>
 									<h3 className="title">
-										{ relatedPost.title }
+										{ escape( relatedPost.title ) }
 									</h3>
-									<p className="excerpt">
-										{ relatedPost.excerpt }
-									</p>
+									{ relatedPost.excerpt && (
+										<p className="excerpt">
+											{ escape( relatedPost.excerpt ) }
+										</p>
+									) }
 								</a>
 							</li>
 						) ) }
