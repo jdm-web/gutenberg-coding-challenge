@@ -21,7 +21,7 @@ import countries from '../assets/countries.json';
 import { getEmojiFlag } from './utils';
 import Preview from './preview';
 
-export default function Edit( { attributes, setAttributes } ) {
+export default function Edit( { attributes, setAttributes, context } ) {
 	const { countryCode, relatedPosts } = attributes;
 	const options = Object.keys( countries ).map( ( code ) => ( {
 		value: code,
@@ -59,7 +59,7 @@ export default function Edit( { attributes, setAttributes } ) {
 				);
 			}
 
-			const postId = wp.data.select( 'core/editor' ).getCurrentPostId();
+			const postId = context.postId;
 			const posts = await apiFetch( {
 				path: `/wp/v2/posts?search=${ countries[ countryCode ] }&exclude=${ postId }`,
 			} ).catch( ( error ) => {
