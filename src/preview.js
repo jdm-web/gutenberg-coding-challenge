@@ -2,6 +2,7 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { createInterpolateElement } from '@wordpress/element';
 /**
  * Internal dependencies
  */
@@ -10,22 +11,41 @@ import continentNames from '../assets/continent-names.json';
 import continents from '../assets/continents.json';
 import { getEmojiFlag } from './utils';
 
+const textDomain = 'xwp-country-card';
+
 export default function Preview( { countryCode, relatedPosts } ) {
 	if ( ! countryCode ) return null;
 
 	const emojiFlag = getEmojiFlag( countryCode ),
 		hasRelatedPosts = relatedPosts?.length > 0;
 
+	const helloTranslatedString = createInterpolateElement(
+		sprintf(
+			/* translators: country name, then country code, then continent name */
+			__(
+				'Hello from <strong>%1$s</strong> (<span>%2$s</span>), %3$s!',
+				textDomain
+			),
+			countries[ countryCode ],
+			countryCode,
+			continentNames[ continents[ countryCode ] ]
+		),
+		{
+			strong: <strong />,
+			span: <span className="xwp-country-card__country-code" />,
+		}
+	);
+
 	const displayRelatedPostsCount = () => {
 		if ( ! hasRelatedPosts ) {
-			return __( 'There are no related posts.', 'xwp-country-card' );
+			return __( 'There are no related posts.', textDomain );
 		}
 		if ( relatedPosts.length === 1 ) {
-			return __( 'There is one related post:', 'xwp-country-card' );
+			return __( 'There is one related post:', textDomain );
 		}
 		return sprintf(
 			/* translators: %d is replaced with the number of related posts */
-			__( 'There are %d related posts:', 'xwp-country-card' ),
+			__( 'There are %d related posts:', textDomain ),
 			relatedPosts.length
 		);
 	};
@@ -39,12 +59,7 @@ export default function Preview( { countryCode, relatedPosts } ) {
 				<div className="xwp-country-card-flag">{ emojiFlag }</div>
 			</div>
 			<h3 className="xwp-country-card__heading">
-				{ __( 'Hello from' ) }{ ' ' }
-				<strong>{ countries[ countryCode ] }</strong> (
-				<span className="xwp-country-card__country-code">
-					{ countryCode }
-				</span>
-				), { continentNames[ continents[ countryCode ] ] }!
+				{ helloTranslatedString }
 			</h3>
 			<div className="xwp-country-card__related-posts">
 				<h3 className="xwp-country-card__related-posts__heading">
