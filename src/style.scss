@@ -2,11 +2,17 @@
 	$cardMaxWidth: 400px; /* Greater than this, display doesn't look great */
 	$borderColor: #dcdcde;
 	$spacing: 1.5rem;
+  	$fontFamily: var(--wp--preset--font-family--source-serif-pro);
+  	$fontLineHeight: var(--wp--custom--typography--line-height--tiny);
+  	$fontWeight: 300;
 
 	border: 1px solid $borderColor;
 	box-shadow: 0 1px 1px rgba(#000, 0.05);
 	max-width: $cardMaxWidth;
 	margin: $spacing auto;
+  	font-family: $fontFamily;
+  	font-weight: $fontWeight;
+  	line-height: $fontLineHeight;
 
 	&__media {
 		align-items: center;
@@ -58,7 +64,7 @@
 
 	& &__related-posts__heading {
 		margin: 0;
-		font-size: 1.5rem;
+		font-size: 1.7rem;
 	}
 
 	&__related-posts-list {
@@ -69,6 +75,10 @@
 		margin-top: $spacing;
 	}
 
+  	.related-post .link {
+	  font-weight: $fontWeight;
+	  line-height: 1.7rem;
+	}
 	.related-post .title {
 		margin: 0;
 		font-size: 1.6rem;
@@ -76,5 +86,10 @@
 
 	.related-post .excerpt {
 		margin: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	  	font-weight: 400;
+		font-size: 1.3rem;
 	}
 }

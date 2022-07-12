@@ -64,13 +64,13 @@ export default function Preview( { countryCode, relatedPosts } ) {
 			>
 				<div className="xwp-country-card-flag">{ emojiFlag }</div>
 			</div>
-			<h3 className="xwp-country-card__heading">
+			<p className="xwp-country-card__heading">
 				{ helloTranslatedString }
-			</h3>
+			</p>
 			<div className="xwp-country-card__related-posts">
-				<h3 className="xwp-country-card__related-posts__heading">
+				<p className="xwp-country-card__related-posts__heading">
 					{ displayRelatedPostsCount() }
-				</h3>
+				</p>
 				{ hasRelatedPosts && (
 					<ul className="xwp-country-card__related-posts-list">
 						{ relatedPosts.map( ( relatedPost, index ) => (
@@ -80,9 +80,9 @@ export default function Preview( { countryCode, relatedPosts } ) {
 									href={ relatedPost.link }
 									data-post-id={ relatedPost.id }
 								>
-									<h3 className="title">
+									<span className="title">
 										{ escape( relatedPost.title ) }
-									</h3>
+									</span>
 									{ relatedPost.excerpt && (
 										<p className="excerpt">
 											{ escape( relatedPost.excerpt ) }
